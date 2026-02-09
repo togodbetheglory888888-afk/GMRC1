@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<title>GMRC 1 – Quarter 4 Week 1</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f2f7ff;
+}
+
+.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+h1 { font-size: 46px; color: #2b5fb3; }
+
+button {
+  padding: 14px 28px;
+  font-size: 18px;
+  margin: 6px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.play-now {
+  background-color: #2b5fb3;
+  color: white;
+  font-size: 24px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  display: none;
+}
+
+.story {
+  background: #dbe9ff;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: justify;
+  font-size: 18px;
+}
+
+.feedback {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.timer {
+  font-size: 22px;
+  font-weight: bold;
+  color: red;
+  margin-bottom: 15px;
+}
+
+.score {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #2b5fb3;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+<div class="center-screen" id="startScreen">
+  <h1>GMRC 1<br>Quarter 4 – Week 1</h1>
+  <button class="play-now" onclick="startGame()">Play Now</button>
+</div>
+
+<!-- GAME CONTENT -->
+<div class="container" id="gameContent">
+
+<div class="timer" id="timer">Time Left: 05:00</div>
+
+<h2>Ang Pagbabalik ng Pag-asa</h2>
+
+<p class="story">
+Si Aling Maya ay isang simpleng nanay na nagtatrabaho bilang vendor sa palengke.
+Habang naglalakad siya pauwi, nakakita siya ng isang matandang lalaki at tinulungan ito.
+Ang matanda ay si Mang Pedro, isang retiradong guro. Dahil sa kabutihan ni Aling Maya,
+gumanda ang buhay nilang lahat.
+</p>
+
+<!-- QUESTIONS -->
+<div id="questions">
+
+<h3>1. Ano ang trabaho ni Aling Maya?</h3>
+<button onclick="checkAnswer(1,'A')">A. Nagsasayaw</button>
+<button onclick="checkAnswer(1,'B')">B. Nagtitinda</button>
+<button onclick="checkAnswer(1,'C')">C. Kumakanta</button>
+<button onclick="checkAnswer(1,'D')">D. Namamalengke</button>
+<p class="feedback" id="fb1"></p>
+
+<h3>2. Ano ang pangalan ng matanda?</h3>
+<button onclick="checkAnswer(2,'A')">A. Mang Danny</button>
+<button onclick="checkAnswer(2,'B')">B. Mang Juan</button>
+<button onclick="checkAnswer(2,'C')">C. Mang Pedro</button>
+<button onclick="checkAnswer(2,'D')">D. Mang Kanor</button>
+<p class="feedback" id="fb2"></p>
+
+<h3>3. Ano ang nakita ni Aling Maya?</h3>
+<button onclick="checkAnswer(3,'A')">A. Matandang babae</button>
+<button onclick="checkAnswer(3,'B')">B. Matandang lalaki</button>
+<button onclick="checkAnswer(3,'C')">C. Mananahi</button>
+<button onclick="checkAnswer(3,'D')">D. Pulis</button>
+<p class="feedback" id="fb3"></p>
+
+<h3>4. Tama ba ang pagtulong ni Aling Maya?</h3>
+<button onclick="checkAnswer(4,'A')">A. Hindi</button>
+<button onclick="checkAnswer(4,'B')">B. Hindi</button>
+<button onclick="checkAnswer(4,'C')">C. Oo, may reward</button>
+<button onclick="checkAnswer(4,'D')">D. Oo, walang kapalit</button>
+<p class="feedback" id="fb4"></p>
+
+<h3>5. Ano ang naging bunga ng pagtulong?</h3>
+<button onclick="checkAnswer(5,'A')">A. Lumubog ang buhay</button>
+<button onclick="checkAnswer(5,'B')">B. Dumami ang mamimili</button>
+<button onclick="checkAnswer(5,'C')">C. Gumanda ang buhay ng pamilya</button>
+<button onclick="checkAnswer(5,'D')">D. Lahat ay tama</button>
+<p class="feedback" id="fb5"></p>
+
+</div>
+
+<div class="score" id="finalScore"></div>
+
+<button onclick="restartGame()">Please Try Again</button>
+
+</div>
+
+<script>
+const answers = {1:'B',2:'C',3:'B',4:'D',5:'C'};
+let score = 0;
+let answered = {};
+let timeLeft = 300;
+let timerInterval;
+
+function startGame(){
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("gameContent").style.display="block";
+  startTimer();
+}
+
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    let min = String(Math.floor(timeLeft/60)).padStart(2,'0');
+    let sec = String(timeLeft%60).padStart(2,'0');
+    document.getElementById("timer").textContent = `Time Left: ${min}:${sec}`;
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      endGame();
+    }
+  },1000);
+}
+
+function speak(text){
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang="fil-PH";
+  speechSynthesis.speak(msg);
+}
+
+function checkAnswer(q,choice){
+  if(answered[q]) return;
+  answered[q]=true;
+  const fb=document.getElementById("fb"+q);
+
+  if(choice===answers[q]){
+    fb.textContent="✅ Tama (Correct Answer)";
+    fb.style.color="green";
+    score++;
+    speak("Tama");
+  } else {
+    fb.textContent=`❌ Subukan muli | Tamang sagot: ${answers[q]}`;
+    fb.style.color="red";
+    speak("Subukan muli");
+  }
+
+  if(Object.keys(answered).length===5){
+    endGame();
+  }
+}
+
+function endGame(){
+  clearInterval(timerInterval);
+  document.getElementById("finalScore").textContent =
+    `Your Total Score: ${score} / 5`;
+}
+
+function restartGame(){
+  location.reload();
+}
+</script>
+
+</body>
+</html>
